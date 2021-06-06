@@ -6,8 +6,9 @@ package treap_test
 
 import (
 	"fmt"
-	"github.com/perdata/treap"
 	"math/rand"
+	
+	"github.com/yomiji/treap"
 )
 
 type pair struct {
@@ -26,9 +27,11 @@ type Map struct {
 }
 
 func NewMap(keyCompare treap.Comparer) Map {
-	c := comparer(func(v1, v2 pair) int {
-		return keyCompare.Compare(v1.key, v2.key)
-	})
+	c := comparer(
+		func(v1, v2 pair) int {
+			return keyCompare.Compare(v1.key, v2.key)
+		},
+	)
 	return Map{nil, c}
 }
 
@@ -52,43 +55,49 @@ func (m Map) Delete(key interface{}) Map {
 }
 
 func (m Map) ForEach(fn func(key, value interface{})) {
-	m.Node.ForEach(func(v interface{}) {
-		p := v.(pair)
-		fn(p.key, p.value)
-	})
+	m.Node.ForEach(
+		func(v interface{}) {
+			p := v.(pair)
+			fn(p.key, p.value)
+		},
+	)
 }
 
 func (m Map) Count() int {
 	result := 0
-	m.Node.ForEach(func(_ interface{}) {
-		result++
-	})
+	m.Node.ForEach(
+		func(_ interface{}) {
+			result++
+		},
+	)
 	return result
 }
 
 func Example_orderedMap() {
 	rand.Seed(42)
-
+	
 	m := NewMap(IntComparer{})
 	fmt.Println("Count:", m.Count())
-
+	
 	m = m.Set(52, "hello")
 	m = m.Set(53, "world")
 	m = m.Set(52, "Hello")
-
-	m.ForEach(func(k, v interface{}) {
-		fmt.Println("[", k, "] =", v)
-	})
+	
+	m.ForEach(
+		func(k, v interface{}) {
+			fmt.Println("[", k, "] =", v)
+		},
+	)
 	fmt.Println("Count:", m.Count())
-
+	
 	old := m.Set(500, 500)
 	m = m.Delete(53)
-
+	
 	fmt.Println(m.Get(53))
 	fmt.Println(old.Get(53))
 	fmt.Println(old.Get(52))
 	fmt.Println(old.Get(500))
-
+	
 	// Output:
 	// Count: 0
 	// [ 52 ] = Hello

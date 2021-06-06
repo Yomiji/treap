@@ -97,11 +97,11 @@ func (n *Node) Union(other *Node, c Comparer, overwrite bool) *Node {
 	if other == nil {
 		return n
 	}
-
+	
 	if n.Priority < other.Priority {
 		other, n, overwrite = n, other, !overwrite
 	}
-
+	
 	left, dupe, right := other.Split(n.Value, c)
 	value := n.Value
 	if overwrite && dupe != nil {
@@ -123,7 +123,7 @@ func (n *Node) Split(v interface{}, c Comparer) (left, mid, right *Node) {
 			*rightp = nil
 			return left, nil, right
 		}
-
+		
 		root := &Node{n.Value, n.Priority, nil, nil}
 		diff := c.Compare(n.Value, v)
 		switch {
@@ -157,20 +157,20 @@ func (n *Node) Intersection(other *Node, c Comparer) *Node {
 	if n == nil || other == nil {
 		return nil
 	}
-
+	
 	if n.Priority < other.Priority {
 		n, other = other, n
 	}
-
+	
 	left, found, right := other.Split(n.Value, c)
 	left = n.Left.Intersection(left, c)
 	right = n.Right.Intersection(right, c)
-
+	
 	if found == nil {
 		// TODO: use a destructive join as both left/right are copies
 		return left.join(right)
 	}
-
+	
 	return &Node{n.Value, n.Priority, left, right}
 }
 
@@ -186,7 +186,7 @@ func (n *Node) Diff(other *Node, c Comparer) *Node {
 	if n == nil || other == nil {
 		return n
 	}
-
+	
 	// TODO -- use  count
 	if n.Priority >= other.Priority {
 		left, dupe, right := other.Split(n.Value, c)
@@ -196,7 +196,7 @@ func (n *Node) Diff(other *Node, c Comparer) *Node {
 		}
 		return &Node{n.Value, n.Priority, left, right}
 	}
-
+	
 	left, _, right := n.Split(other.Value, c)
 	left = left.Diff(other.Left, c)
 	right = right.Diff(other.Right, c)
@@ -226,7 +226,7 @@ func (n *Node) join(other *Node) *Node {
 			*resultp = n
 			return result
 		}
-
+		
 		if n.Priority <= other.Priority {
 			root := &Node{n.Value, n.Priority, n.Left, nil}
 			*resultp = root
